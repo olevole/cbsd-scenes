@@ -1,0 +1,6 @@
+jname="owncloud"
+ver="native"
+arch="native"
+repoversion="nox"
+customskel="/root/boot.bsdstore.ru/helpers/img/owncloud/addskel"
+fstablocal="/root/boot.bsdstore.ru/helpers/img/owncloud/fstab.local"

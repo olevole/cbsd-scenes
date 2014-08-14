@@ -1,0 +1,164 @@
+#!/bin/sh
+
+NETWORK_SAVE="/tmp/networks.txt"
+
+save_settings()
+{
+
+    eval IS_DHCP=\$dhcp_${MYNIC}
+    eval ip4=\$ip4_${MYNIC}
+    eval ip6=\$ip6_${MYNIC}
+    eval mask4=\$mask4_${MYNIC}
+    eval mask6=\$mask6_${MYNIC}
+
+    if [ "${IS_DHCP}" = "DHCP" ]; then
+        MYDHCP="YES"
+    else
+        MYDHCP="NO"
+    fi
+
+cat >${NETWORK_SAVE} <<EOF
+nic: ${MYNIC}
+ip4: ${ip4}
+gw4: ${gw4}
+gw6: ${gw6}
+mask4: ${mask4}
+mask6: ${mask6}
+dhcpd: ${MYDHCP}
+EOF
+}
+
+
+
+dhcp_client() {
+    local i ALLNIC="$@" leasefile
+
+    [ -z "${ALLNIC}" ] && return 0
+
+    for i in ${ALLNIC}; do
+	${ECHO} " ${BOLD}*${NORMAL} ${MAGENTA}Trying DHCP for : ${GREEN}${i}${NORMAL}"
+	leasefile="/var/db/dhclient.leases.${i}"
+	[ -f "${leasefile}" ] && rm -f ${leasefile}
+
+	dhclient -c ${_MYDIR}/dhclient.conf ${i} > /dev/null 2>&1
+	killall -9 dhclient > /dev/null 2>&1
+    done
+}
+
+
+get_nic_ip() {
+    local _nic="${1}" ip4 ip6
+
+    [ -z "${_nic}" ] && return 0
+
+    ip4=$(ifconfig ${_nic} 2>/dev/null| awk '/inet / { print $2}' | head -n 1)
+    ip6=$(ifconfig ${_nic} 2>/dev/null| awk '/inet6 / { print $2}' | head -n 1| grep -v ${_nic}\$)
+
+    if [ "${ip4}" != "0.0.0.0" ]; then
+	eval $( printf "ip4_${_nic}=\"${ip4}\"" )
+    fi
+
+    if [ -n "${ip6}" ]; then
+	eval $( printf "ip6_${_nic}=\"${ip6}\"" )
+    fi
+}
+
+get_nic_dhcp() {
+	local _nic="${1}"
+
+	[ -z "${_nic}" ] && return 0
+
+	# dhcp detect
+	leasefile="/var/db/dhclient.leases.${_nic}"
+	[ ! -f "${leasefile}" ] && return 0
+	dhcp_flags=$(stat -f %z ${leasefile} 2>&1)
+
+	if [ -n "${dhcp_flags}" ]; then
+	    if [ ${dhcp_flags} -gt 0 ]; then
+		eval $( printf "dhcp_${_nic}='DHCP'" )
+	    fi
+	fi
+}
+
+get_nic_mask() {
+    local _nic="${1}"
+
+    [ -z "${_nic}" ] && return 0
+
+    #hardcoded
+    mask4="255.255.255.0"
+    mask6=""
+
+    if [ -n "${mask4}" ]; then
+	eval $( printf "mask4_${_nic}=\"${mask4}\"" )
+    fi
+
+    if [ -n "${mask6}" ]; then
+	eval $( printf "mask6_${_nic}=\"${mask6}\"" )
+    fi
+}
+
+
+get_sys_route() {
+    gw4=`route -n get 0.0.0.0 2>/dev/null| /usr/bin/awk '/gateway:/{print $2}'`
+    gw6=`route -n get -inet6 :: 2>/dev/null | /usr/bin/awk '/gateway:/{print $2}'`
+}
+
+
+nic_test() {
+    local nic_num=0 ALLNIC NO_CHOOSED=1
+
+    nic_num=`/usr/jails/misc/nics-list -d|wc -l`
+
+    if [ ${nic_num} -eq 0 ]; then
+	${ECHO} "${MAGENTA} No network card detected. Exit${NORMAL}"
+	exit
+    fi
+
+    ALLNIC=`/usr/jails/misc/nics-list`
+
+    dhcp_client ${ALLNIC}
+
+    if [ ${nic_num} -eq 1 ]; then
+	MYNIC=`/usr/jails/misc/nics-list`
+	get_nic_ip ${MYNIC}
+	eval ip=\$ip4_${MYNIC}
+	return 0
+    fi
+
+    ${ECHO} "${MAGENTA}You have multiple active nics. Please choose default interface${NORMAL}"
+
+    while [ ${NO_CHOOSED} -eq 1 ]; do
+	nic_num=0
+	for _nic in ${ALLNIC}; do
+	    eval $( printf "selectnic${nic_num}=\"${_nic}\"" )
+	    get_nic_ip ${_nic}
+	    eval DHCP=\$dhcp_${_nic}
+	    eval IP4=\$ip4_${_nic}
+	    if [ "${DHCP}" = "YES" ]; then
+		IS_DHCP="DHCP"
+	    else
+		IS_DHCP=""
+	    fi
+	    printf "${nic_num}) ${_nic} ${IS_DHCP} ${IP4}\n"
+	    nic_num=$(( nic_num + 1 ))
+	done
+	read getnic
+	[ ${getnic} -ge 0 -a ${getnic} -le ${nic_num} ] && NO_CHOOSED=0
+    done
+
+    eval MYNIC=\$selectnic${getnic}
+    eval IS_DHCP=\$dhcp_${MYNIC}
+    eval ip=\$ip4_${MYNIC}
+
+    ${ECHO} "${GREEN}$MYNIC ${MAGENTA}Selected.${NORMAL}"
+}
+
+
+collect_net_data() {
+    get_sys_route
+    get_nic_ip ${MYNIC}
+    get_nic_mask ${MYNIC}
+    get_nic_dhcp ${MYNIC}
+}
+

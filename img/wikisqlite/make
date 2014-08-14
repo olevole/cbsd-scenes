@@ -1,0 +1,26 @@
+#!/bin/sh
+mypath=$( realpath $0 )
+mydir=$( dirname ${mypath} )
+myjname="wikisqlite"
+
+cbsd jremove ${myjname}
+cbsd makescene scene=${mydir}/img.scene
+
+. /etc/rc.conf
+workdir=$cbsd_workdir
+mysysdir="${workdir}/jails-system/${myjname}"
+
+[ ! -d ${mysysdir} ] && mkdir -p ${mysysdir}
+[ -f ${mydir}/tmpfsdir ] && cp ${mydir}/tmpfsdir ${mysysdir}
+
+cbsd pkg mode=bootstrap repodir=/usr/local/etc/pkg/repos jname=${myjname}
+cbsd pkg mode=install repodir=/usr/local/etc/pkg/repos jname=${myjname} pkglist=/root/boot.bsdstore.ru/helpers/img/${myjname}/img.list
+
+[ -d "${mydir}/${myjname}" -a -d "${mysysdir}" ] && cp -Rp ${mydir}/${myjname}/* ${mysysdir}/
+[ -d "${workdir}/jails-data/${myjname}-data/var/cache/pkg/All" ] && rm -rf "${workdir}/jails-data/${myjname}-data/var/cache/pkg/All"
+
+# remove temp fstab local from .scene file for pkg repos
+[ -f "${workdir}/jails-fstab/fstab.${myjname}.local" ] && rm -f ${workdir}/jails-fstab/fstab.${myjname}.local
+
+[ ! -d "${mysysdir}/skel" ] && mkdir ${mysysdir}/skel
+cp -a ${mydir}/skel/skel ${mysysdir}/skel/

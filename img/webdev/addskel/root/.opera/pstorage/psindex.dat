@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<preferences>
+  <section id="6BAA02A109738DB7F2655F3D7CDF03A6FEB4EAE2">
+    <value id="Type" xml:space="preserve">localstorage</value>
+    <value id="Origin" xml:space="preserve">http://www.yandex.ru</value>
+    <value id="DataFile" xml:space="preserve">pstorage/00/0C/00000000</value>
+  </section>
+  <section id="71132ACCFAE0494EF37824AD138D71A7D5FD4844">
+    <value id="Type" xml:space="preserve">localstorage</value>
+    <value id="Origin" xml:space="preserve">http://megogo.net</value>
+    <value id="DataFile" xml:space="preserve">pstorage/00/0F/00000000</value>
+  </section>
+</preferences>

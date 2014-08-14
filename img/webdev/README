@@ -1,0 +1,5 @@
+wizards and helpers for images. Put this in $systemdir 
+
+ldapsrv - directory for system-dir with installer script
+addskel - additional skel applyed under jcreate
+skel - additional tpl for helper

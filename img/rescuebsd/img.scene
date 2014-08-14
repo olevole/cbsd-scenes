@@ -1,0 +1,6 @@
+jname="rescuebsd"
+ver="native"
+arch="native"
+customskel="/root/boot.bsdstore.ru/helpers/img/rescuebsd/addskel"
+fstablocal="/root/boot.bsdstore.ru/helpers/img/rescuebsd/fstab.local"
+stable="1"

@@ -1,0 +1,6 @@
+jname="ldapsrv"
+ver="10.0"
+arch="native"
+customskel="/root/boot.bsdstore.ru/helpers/img/ldapsrv/addskel"
+fstablocal="/root/boot.bsdstore.ru/helpers/img/ldapsrv/fstab.local"
+stable="0"

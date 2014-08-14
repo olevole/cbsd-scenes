@@ -1,0 +1,61 @@
+#!/bin/sh
+# $1 - root pw, $2 - redmine pw
+/usr/sbin/service mysql-server status || /usr/sbin/service mysql-server restart > /dev/null 2>&1
+[ ! -h "/var/db/mysql/my.cnf" ] && ln -s /root/etc/my.cnf /var/db/mysql/my.cnf
+
+if [ -z "$1" ]; then
+    MYPW=""
+else
+    MYPW="$1"
+fi
+
+if [ -z "$2" ]; then
+    USERPW="my_password"
+else
+    USERPW="$2"
+fi
+
+cat > /root/etc/mypw <<EOF
+MYPW="${MYPW}"
+USERPW="${USERPW}"
+EOF
+
+chmod 0400 /root/etc/mypw
+
+if [ -n "${MYPW}" ]; then
+    SQLCRED="-p${MYPW}"
+else
+    SQLCRED=""
+fi
+
+/usr/local/bin/mysql -uroot -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@localhost IDENTIFIED BY \"${MYPW}\";"
+[ -n "${SQLCRED}" ] && /usr/local/bin/mysql -uroot ${SQLCRED} mysql -e "DELETE FROM user WHERE PASSWORD='';"
+
+DBDATA="/root/skel/mysqlinc.tpl"
+
+DB="wordpress"
+USER="wordpress"
+HOST="localhost"
+
+if [ ! -f "${DBDATA}" ]; then
+    echo "No such db data: ${DBDATA}"
+    exit 1
+fi
+
+sed -Ees:%%USERPW%%:${USERPW}:g \
+-es:%%DB%%:${DB}:g \
+-es:%%USER%%:${USER}:g \
+-es:%%HOST%%:${HOST}:g ${DBDATA} > /tmp/mysqlinc.$$
+
+. /tmp/mysqlinc.$$
+rm -f /tmp/mysqlinc.$$
+
+echo /usr/local/bin/mysql -uroot ${SQLCRED} -e "${createdb}"
+echo /usr/local/bin/mysql -uroot ${SQLCRED} -e "${grantdb}"
+
+/usr/local/bin/mysql -uroot ${SQLCRED} -e "${createdb}"
+/usr/local/bin/mysql -uroot ${SQLCRED} -e "${grantdb}"
+
+/usr/sbin/service mysql-server stop
+
+sed s:%%USERPW%%:${USERPW}:g /root/skel/wp-config.php > /usr/local/www/wordpress/wp-config.php

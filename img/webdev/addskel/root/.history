@@ -1,0 +1,556 @@
+#+1387817124
+truncate -s0 /etc/motd
+#+1387817133
+cd /usr/ports/ports-mgmt/pkg
+#+1387817134
+make clean
+#+1387817136
+make
+#+1387817167
+make install
+#+1387817237
+cd /mnt
+#+1387817237
+ls -la
+#+1387817239
+cd jb1.olevole.ru/
+#+1387817240
+ls -la
+#+1387817241
+cd dl.bsdstore.ru/
+#+1387817242
+ls -la
+#+1387817243
+cd freebsd/
+#+1387817244
+ls -la
+#+1387817245
+cd amd64/
+#+1387817246
+ls -la
+#+1387817247
+cd 11
+#+1387817248
+ls
+#+1387817252
+cd webdev-slave/
+#+1387817252
+ls
+#+1387817254
+cd All/
+#+1387817255
+ls
+#+1387817276
+pkg add ./nginx-devel-1.5.7.txz php55-5.5.7.txz ./opera-12.16.txz ./xorg-minimal-7.5.2.txz
+#+1387817308
+pkg add ./cbsd-10.0.0.txz
+#+1387817318
+pkg remove cbsd gcc
+#+1387817326
+pkg remove gcc
+#+1387817329
+pkg info
+#+1387817336
+whereis php55-json
+#+1387817339
+php -m
+#+1387817483
+cd /mnt/
+#+1387817483
+ls
+#+1387817485
+cd jb1.olevole.ru/
+#+1387817485
+ls
+#+1387817486
+cd dl.bsdstore.ru/
+#+1387817487
+ls
+#+1387817488
+cd freebsd/
+#+1387817488
+ls
+#+1387817490
+cd amd64/
+#+1387817490
+ls
+#+1387817491
+cd 11
+#+1387817492
+l
+#+1387817493
+l
+#+1387817494
+ls
+#+1387817497
+cd webdev-slave/
+#+1387817497
+ls
+#+1387817499
+ls -la
+#+1387817668
+ls -la
+#+1387817670
+cd All
+#+1387817671
+ls
+#+1387817675
+pkg add php55-json-5.5.7.txz
+#+1387820826
+su www
+#+1387820828
+w
+#+1387820829
+top
+#+1387820833
+cat /etc/rc.conf
+#+1387820835
+mkdir /var/log/httpd
+#+1387820838
+cd /var/log/httpd/
+#+1387820840
+touch php.err
+#+1387820843
+chown www:www php.err
+#+1387820845
+service nginx restart
+#+1387820859
+sockstat -4l
+#+1387820863
+mc
+#+1387820866
+cd /usr/local/etc
+#+1387820868
+vi php-fpm.conf
+#+1387820970
+service php-fpm restart
+#+1387820972
+cbsd jls
+#+1387820977
+service nginx restart
+#+1387820980
+cd /usr/local/cbsd
+#+1387820981
+cd sudoexec/
+#+1387820991
+env workdir="/usr/jails" ./initenv
+#+1387821172
+cd
+#+1387821174
+cd /usr/local/cbsd
+#+1387821175
+cd sudoexec/
+#+1387821177
+cd initenv
+#+1387821182
+env workdir="/usr/jails" ./initenv
+#+1387821249
+cbsd jls
+#+1387826328
+w
+#+1387826331
+top
+#+1387826334
+sockstat -4l
+#+1387826357
+mc
+#+1387826475
+service nginx restart
+#+1387826505
+service nginx restart
+#+1387826521
+mc
+#+1387826524
+cd /var/log/httpd/
+#+1387826524
+ls -la
+#+1387826558
+service nginx restart
+#+1387826559
+ls -la
+#+1387826564
+ls -la
+#+1387826566
+cat a.acc
+#+1387826632
+ls -la
+#+1387826634
+cat a.acc
+#+1387826638
+cat i.err
+#+1387826677
+sockstat -4l
+#+1387826684
+ls -la
+#+1387826688
+tail -f *
+#+1387826718
+1cd /usr/home/web/webdev.bsdstore.ru/public
+#+1387826719
+cd /usr/home/web/webdev.bsdstore.ru/public
+#+1387826724
+cd /usr/home
+#+1387826732
+mkdir web
+#+1387826736
+mv webdev.bsdstore.ru web
+#+1387826741
+service nginx restart
+#+1387826757
+cd /var/log/httpd/
+#+1387826758
+ls -la
+#+1387826760
+tail -f *
+#+1387826782
+cd ~web
+#+1387826783
+ls -la
+#+1387826787
+cd /home
+#+1387826788
+ls -la
+#+1387826791
+chown -R www:www *
+#+1387826798
+cd /home
+#+1387826799
+cd web
+#+1387826800
+ls -la
+#+1387826803
+grep -R sudo *
+#+1387826812
+man su
+#+1387826816
+grep -R sudo *
+#+1387826825
+su -m man -c csh
+#+1387828556
+su -m www -c csh
+#+1387828788
+setenv DISPLAY 192.168.1.2:0
+#+1387828790
+opera
+#+1387828812
+opera http://127.0.0.1
+#+1387829959
+cd
+#+1387829964
+vi .cshrc
+#+1387830021
+vi .xinitrc
+#+1387830044
+pkg remove fluxbox
+#+1387830047
+pkg info | grep flux
+#+1387831184
+crontab -e
+#+1387831191
+vi /etc/rc.conf
+#+1387831214
+cd /var/log/
+#+1387832746
+mc
+#+1387832748
+cd /usr/jails/
+#+1387832750
+cd etc
+#+1387832754
+vi modules.conf
+#+1387832758
+cbsd initenv
+#+1387832765
+crontab -e
+#+1387832775
+vi /etc/rc.conf
+#+1387833112
+cd /mnt
+#+1387833112
+ls
+#+1387833114
+cd jb1.olevole.ru/
+#+1387833114
+ls
+#+1387833115
+cd dl.bsdstore.ru/
+#+1387833115
+ls
+#+1387833122
+cd freebsd/amd64/11/webdev-slave/
+#+1387833122
+ls
+#+1387833124
+cd All/
+#+1387833131
+ls
+#+1387833133
+ls | grep flux
+#+1387833207
+ls
+#+1387833265
+ls
+#+1388099258
+cd /usr/jails/
+#+1388099259
+rm -rf *
+#+1388099262
+cd /usr/local/cbsd
+#+1388099263
+cd sudoexec/
+#+1388099265
+env workdir="/usr/jails" ./initenv
+#+1388099297
+vi /etc/rc.conf
+#+1388099307
+vi /etc/rc.conf
+#+1388099313
+cbsd jls
+#+1388099854
+cbsd initenv
+#+1388099859
+rm -f /var/run/dbus/dbus.pid
+#+1389704542
+cd /usr/local/cbsd
+#+1389704543
+git pull
+#+1389704563
+cd /usr/local/cbsd
+#+1389704565
+cbsd initenv
+#+1389704572
+mc
+#+1389704581
+cd /usr/jails/tools
+#+1389704582
+ls -la
+#+1389704583
+r- mf *
+#+1389704587
+rm -f *
+#+1389704589
+cbsd initenv
+#+1389704605
+env workdir="/usr/jails" /usr/local/cbsd/susdoexec/initenv
+#+1389704614
+cd /usr/local
+#+1389704615
+cd cbsd
+#+1389704616
+cd sudoexec/
+#+1389704618
+ls
+#+1389704621
+env workdir="/usr/jails" /usr/local/cbsd/susdoexec/initenv
+#+1389704627
+env workdir="/usr/jails" /usr/local/cbsd/sudoexec/initenv
+#+1389713575
+rm -f /var/run/dbus/dbus.pid
+#+1389713577
+cbsd initenv
+#+1389774610
+cbsd initenv
+#+1389795499
+vi /etc/pkg/FreeBSD.conf
+#+1389795508
+pkg update
+#+1389795511
+pkg upgrade -f
+#+1389795566
+pkg remove gcc
+#+1389795570
+pkg info | grep gcc
+#+1389795574
+pkg remove gcc46
+#+1389795580
+pkg remove -f gcc46
+#+1389796531
+cbsd initenv
+#+1389797046
+mount
+#+1389797048
+gcc
+#+1389797061
+cd /tmp/repo/
+#+1389797062
+ls
+#+1389797063
+ls -la
+#+1389797075
+mount
+#+1389797076
+cd /tmp
+#+1389797077
+c drepo
+#+1389797078
+cd repo
+#+1389797078
+ls
+#+1389797080
+cd All/
+#+1389797080
+ls
+#+1389797083
+pkg add ./gcc46-4.6.4_1,1.txz
+#+1389798535
+cbsd initenv
+#+1389801476
+cbsd initenv
+#+1389802169
+cbsd initenv
+#+1389808357
+cbsd initenv
+#+1389808379
+cd /etc
+#+1389808381
+ln -s 'abort:false,junk:false' /etc/malloc.conf
+#+1389808384
+ls -la | grep malloc
+#+1389809081
+cbsd initenv
+#+1389809090
+rm -f /var/run/dbus/dbus.pid
+#+1389810731
+cbsd initenv
+#+1389815905
+rm -f /var/run/dbus/dbus.pid
+#+1389815909
+cbsd initenv
+#+1389816008
+cbsd initenv
+#+1389816061
+cbsd initenv
+#+1389816910
+cbsd initenv
+#+1389869171
+w
+#+1389869174
+cbsd initenv
+#+1389870237
+cbsd initenv
+#+1389871019
+passwd root
+#+1389871024
+vi /etc/rc.conf
+#+1389872223
+cbsd initenv
+#+1389872886
+vipw
+#+1389872889
+passwd root
+#+1389872892
+vip
+#+1389872892
+vipw
+#+1389873638
+cbsd initenv
+#+1389874868
+cbsd initenv
+#+1389877269
+cbsd initenv
+#+1393513570
+mc
+#+1393513572
+cd /var/tmp
+#+1393513572
+ls -la
+#+1393513575
+mergemaster -a
+#+1393513582
+vipw
+#+1393513593
+vipw
+#+1393513599
+mergemaster -a
+#+1393513604
+vipw
+#+1393513623
+vi /etc/group
+#+1393513641
+mergemaster -a
+#+1393513774
+cd /usr/local/
+#+1393513775
+ls -la
+#+1393513776
+mv cbsd
+#+1393513779
+rm -rf cbsd
+#+1393513788
+git clone ssh://git.olevole.ru/git/webdev cbsd
+#+1393513812
+cd cbsd
+#+1393513814
+git pull
+#+1393513819
+cbsd initenv
+#+1393513849
+pkg info
+#+1393513855
+cd /usr/ports/ports-mg
+#+1393513857
+cd /usr/ports
+#+1393513858
+ls
+#+1393513924
+rm -f /var/run/dbus/dbus.pid
+#+1393513926
+rm -f /var/run/dbus/dbus.pid
+#+1393513927
+pkg
+#+1393513931
+cd /usr/ports/ports-mgmt/pkg
+#+1393513932
+make clean
+#+1393513933
+make
+#+1393513967
+make deinstall
+#+1393513968
+make install
+#+1393513969
+pkg
+#+1393513975
+pkg info
+#+1393513986
+cd ../
+#+1393513988
+cd portmaster
+#+1393513989
+make clean
+#+1393513992
+make deinstall
+#+1393513993
+make install
+#+1393513998
+vi /etc/make.conf
+#+1393514024
+vi /etc/make.conf
+#+1393514033
+make clean
+#+1393514037
+rehash
+#+1393514039
+portmaster -yda
+#+1393514092
+pkg info | grep cbsd
+#+1393514094
+portmaster -ydaf
+#+1393514428
+ping ya.ru
+#+1393514433
+cat /etc/resolv.conf
+#+1393514446
+ping ya.ru
+#+1394445737
+cat /usr/local/etc/pkg/repos/pkg.conf
+#+1394445795
+pkg update
+#+1394445797
+pkg upgrade -f
+#+1394445938
+cbsd initenv
+#+1394475270
+cbsd initenv
+#+1394476609
+cbsd initenv

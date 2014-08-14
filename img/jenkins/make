@@ -1,0 +1,48 @@
+#!/bin/sh
+mypath=`realpath $0`
+mydir=`dirname ${mypath}`
+
+set -e
+. ${mydir}/jname.conf
+. /etc/rc.conf
+workdir=$cbsd_workdir
+. ${workdir}/build.subr
+set +e
+
+cbsd jremove ${jname}
+
+TRAP="rm -f /tmp/img.scene.$$ /tmp/img.$$.jconf;"
+trap "${TRAP}" HUP INT ABRT BUS TERM EXIT
+
+sed -Ees:%%JNAME%%:${jname}:g \
+-es:%%VER%%:${ver}:g \
+-es:%%ARCH%%:${arch}:g \
+${mydir}/img.scene > /tmp/img.scene.$$
+
+sed -Ees:%%JNAME%%:${jname}:g \
+-es:%%VER%%:${ver}:g \
+-es:%%ARCH%%:${arch}:g \
+${mydir}/img.jconf > /tmp/img.$$.jconf
+
+if [ -f "${mydir}/fstab.local.tpl" ]; then
+    sed -Ees:%%JNAME%%:${jname}:g \
+    -es:%%VER%%:${ver}:g \
+    -es:%%ARCH%%:${arch}:g \
+    ${mydir}/fstab.local.tpl > ${mydir}/fstab.local
+    TRAP="${TRAP} rm -f ${mydir}/fstab.local;"
+    trap "${TRAP}" HUP INT ABRT BUS TERM EXIT
+fi
+
+cbsd makescene scene=/tmp/img.scene.$$
+
+[ ! -d ${workdir}/jails-system/${jname} ] && mkdir -p ${workdir}/jails-system/${jname}
+[ -f ${mydir}/tmpfsdir ] && cp ${mydir}/tmpfsdir ${workdir}/jails-system/${jname}
+
+#cbsd pkg mode=bootstrap repodir=/usr/local/etc/pkg/repos jname=${jname}
+#cbsd pkg mode=install repodir=/usr/local/etc/pkg/repos jname=${jname} pkglist=/root/boot.bsdstore.ru/helpers/img/${jname}/img.list
+
+[ -d "${mydir}/${jname}" -a -d "${workdir}/jails-system/${jname}" ] && cp -Rp ${mydir}/${jname}/* ${workdir}/jails-system/${jname}/
+[ -d "${workdir}/jails-data/${jname}-data/var/cache/pkg/All" ] && rm -rf "${workdir}/jails-data/${jname}-data/var/cache/pkg/All"
+
+# remove temp fstab local from .scene file for pkg repos
+[ -f "${workdir}/jails-fstab/fstab.${jname}.local" ] && rm -f ${workdir}/jails-fstab/fstab.${jname}.local

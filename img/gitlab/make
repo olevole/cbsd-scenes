@@ -1,0 +1,13 @@
+#!/bin/sh
+mypath=`realpath $0`
+mydir=`dirname ${mypath}`
+myjname="gitlab"
+
+cbsd jremove ${myjname}
+cbsd makescene scene=${mydir}/${myjname}.scene
+
+. /etc/rc.conf
+workdir=$cbsd_workdir
+
+[ ! -d ${workdir}/jails-system/${myjname} ] && mkdir -p ${workdir}/jails-system/${myjname}
+[ -f ${mydir}/tmpfsdir ] && cp ${mydir}/tmpfsdir ${workdir}/jails-system/${myjname}

@@ -1,0 +1,6 @@
+jname="webdev"
+ver="native"
+arch="native"
+customskel="/root/boot.bsdstore.ru/helpers/img/webdev/addskel"
+fstablocal="/root/boot.bsdstore.ru/helpers/img/webdev/fstab.local"
+stable="1"

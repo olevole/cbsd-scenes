@@ -1,0 +1,62 @@
+#!/bin/sh
+
+#defines
+_MYDIR=$(dirname `realpath $0`)
+
+
+usage()
+{
+cat > /dev/stdout <<EOF
+$0 <options> <mode>
+
+possible options:
+ -i <interface> - specify interface for dhclient
+
+
+possible mode:
+ dhclient - try execute dhclient on specified interface and save in ${NETWORK_SAVE}
+
+
+EOF
+exit
+}
+
+### MAIN Route ###
+set -e
+    ECHO="echo"
+    NO_COLOR="0"
+    . ${_MYDIR}/ansiicolor.subr
+    . ${_MYDIR}/wb_net_helper.subr
+set +e
+
+[ -z "${1}" ] && usage
+
+while getopts "i:c" opt; do
+    case "${opt}" in
+	i)
+	    IFACE="${OPTARG}" ;;
+	c)
+	    NO_COLOR="1" ;;
+	*)  usage ;;
+    esac
+    shift $(($OPTIND - 1))
+done
+
+mode="${1}"
+[ -z "${mode}" ] && echo "Please specify mode" && usage
+
+[ ${NO_COLOR} -eq 0 ] && init_color
+
+case "${mode}" in
+    "dhclient")
+	[ -z "${IFACE}" ] && echo "-i in necessary" && usage
+	MYNIC="${IFACE}"
+	dhcp_client "${MYNIC}"
+	collect_net_data
+	save_settings
+	exit
+	;;
+    *)
+	usage
+	;;
+esac

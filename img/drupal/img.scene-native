@@ -1,0 +1,6 @@
+jname="drupal"
+ver="native"
+arch="native"
+repoversion="nox"
+customskel="/root/boot.bsdstore.ru/helpers/img/drupal/addskel"
+fstablocal="/root/boot.bsdstore.ru/helpers/img/drupal/fstab.local"

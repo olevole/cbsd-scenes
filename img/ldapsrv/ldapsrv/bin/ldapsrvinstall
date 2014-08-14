@@ -1,0 +1,144 @@
+#!/bin/sh
+#v10.0.2
+globalconf="${workdir}/cbsd.conf";
+MYARG=""
+MYOPTARG="cn cnpw fqdn ldapsuffix"
+MYDESC="gitlab image helper"
+
+[ -f ${globalconf} ] || err 1 "no such conf file";
+. ${globalconf}
+. ${subr}
+. ${inventory}
+. ${system}
+. ${color}
+init $*
+
+BACKTITLE="--backtitle \Z1${0}\Zn --colors"
+DIALOG=${DIALOG=/usr/bin/dialog}
+SKELDIR="${jailsysdir}/${jname}/skel"
+
+install_img()
+{
+	[ -d "${path}/root/skel" ] && rm -rf ${path}/root/skel
+	[ -d "${path}/var/db/openldap-data" ] && rm -rf "${path}/var/db/openldap-data"
+	cp -Rp ${SKELDIR}/skel ${path}/root/skel
+	mount -t devfs devfs ${path}/dev
+	sysrc -f ${path}/etc/rc.conf slapd_enable=YES
+	sysrc -f ${path}/etc/rc.conf php_fpm_enable=YES
+	sysrc -f ${path}/etc/rc.conf nginx_enable=YES
+	chroot ${path} /bin/sh /root/skel/ldapprepare $ldapsuffix $ldapcn $mgmtpassword
+	chroot ${path} find usr/local/etc/pkg/repos -type f -name *.conf -depth 1 -maxdepth 1 -delete
+	umount ${path}/dev
+	cbsd jcleanup jname=${jname}
+cat <<EOF
+
+	LDAP installed.
+	
+	1)
+	    Use http://fqdn for login to ldapphpadmin. Login DN is:
+	    "cn=$ldapcn,$ldapsuffix"
+	    or ldapvi for account management
+	2)
+	    Use
+	    % ldapadd -Z -D "cn=$ldapcn,$ldapsuffix" -W -f /path/to/ldif
+	    for create user from LDIF: see
+	    /root/example_user.ldif as example for testuser1
+	3)
+	    For enable ldap-based auth in the jail from LDAP,
+	    add follow packages: pam_mkhomedir, pam_ldap, nss_ldap.
+	    For example from pkg:
+	    % pkg install pam_mkhomedir pam_ldap nss_ldap
+	    And use /root/pam.d/ssh (if needed)
+	    and
+	    /root/etc/nsswitch.conf
+	    as sample for your
+	    /etc/pam.d/sshd and /etc/nsswitch.conf files
+EOF
+    exit
+
+}
+
+
+myconf()
+{
+    tempfile=`mktemp ${ftmpdir}/xconf.XXXX`
+    trap "rm -f ${tempfile}" 0 1 2 3
+
+    returncode=0
+    while test $returncode != 1 && test $returncode != 250; do
+	exec 3>&1
+	value=`$DIALOG ${BACKTITLE} --ok-label "Install" --title "LDAP jail install" --form "ldap configuration" \
+0 0 5 \
+        "Real fqdn (eg: ldap.my.domain):"       1 1      ""  1  35 40 40 \
+        "Common Name (cn) (eg: Manager):"       2 1      "Manager"  2  35 40 40 \
+        "Manager password:"       3 1      ""  3  35 40 40 \
+        "LDAP Suffix (eg: dc=example,dc=com):"       4 1      "dc=example,dc=com"  4  35 40 40 \
+2>&1 1>&3`
+
+	returncode=$?
+	exec 3>&-
+
+	case ${returncode} in
+	0)
+	    I=0
+	    for  a in ${value}; do
+		case $I in
+		    0)
+			fqdn=${a}
+			;;
+		    1)
+			ldapcn=${a}
+			;;
+		    2)
+			mgmtpassword=${a}
+			;;
+		    3)
+			ldapsuffix=${a}
+			;;
+		esac
+		I=$(( I + 1 ))
+            done
+
+	    if [ -z "${fqdn}" -o -z "${ldapcn}" -o -z "${mgmtpassword}" -o -z "${ldapsuffix}" ]; then
+		echo "Please fill all inputs"
+		read p
+		returncode=5
+	    else
+		install_img
+	    fi
+	    ;;
+	*)
+	    cbsd jcleanup jname=${jname}
+	    exit
+	    ;;
+	esac
+    done
+}
+
+### MAIN
+readconf buildworld.conf
+. ${workdir}/universe.subr
+
+. ${jrcconf}
+[ $? -eq 1 ] && err 1 "${MAGENTA}No such jail: ${GREEN}${jname}${NORMAL}"
+[ $jid -gt 0 ] && err 1 "${MAGENTA}Jail is active. Please stop them${NORMAL}"
+
+init_target_arch
+init_basedir
+
+# Mount fstab if not
+[ $baserw -eq 1 ] && path=$data
+[ ! -d "${path}" ] && mkdir -p ${path}
+
+#if  is_mounted "${path}"; then
+    mountbase
+#fi
+
+mountfstab
+
+# auto install by arg
+[ -n "${fqdn}" ] && install_img
+# wizard
+myconf
+
+cbsd jcleanup jname=${jname}

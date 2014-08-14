@@ -1,0 +1,9 @@
+openldap-server
+nginx-devel
+php5
+pecl-zendopcache
+phpldapadmin
+ldapvi
+pam_mkhomedir
+pam_ldap
+nss_ldap

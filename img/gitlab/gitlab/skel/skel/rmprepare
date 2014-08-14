@@ -1,0 +1,28 @@
+#!/bin/sh
+
+if [ -n "${1}" ]; then
+    MYHOST="$1"
+else
+    MYHOST=`hostname`
+fi
+
+DSTDIR="/usr/home/git"
+
+su -m git -c "ssh-keygen -q -N '' -t rsa -f /usr/home/git/gitlab/.ssh/id_rsa"
+
+cp /root/skel/database.yml ${DSTDIR}/gitlab/config/database.yml
+cp /root/skel/nginx.conf /usr/local/etc/nginx/nginx.conf
+
+sed s:MY.HOSTNAME:${MYHOST}:g /root/skel/config.yml > ${DSTDIR}/gitlab-shell/config.yml
+sed s:MY.HOSTNAME:${MYHOST}:g /root/skel/nginx-gitlab.conf > /usr/local/etc/nginx/vhosts/nginx-gitlab.conf
+
+chown -R git:git ${DSTDIR}/gitlab-shell/config.yml
+chown -R git:git ${DSTDIR}/gitlab/config/database.yml
+
+su -m git -c "cd ${DSTDIR}/gitlab; \
+bundle exec rake gitlab:setup RAILS_ENV=production"
+
+[ ! -d "/var/log/httpd" ] && mkdir /var/log/httpd
+service mysql-server stop > /dev/null 2>&1
+service redis stop > /dev/null 2>&1
+service nginx stop > /dev/null 2>&1

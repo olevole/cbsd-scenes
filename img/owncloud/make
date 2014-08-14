@@ -1,0 +1,22 @@
+#!/bin/sh
+mypath=`realpath $0`
+mydir=`dirname ${mypath}`
+myjname="owncloud"
+
+cbsd jremove ${myjname}
+cbsd makescene scene=${mydir}/img.scene
+
+. /etc/rc.conf
+workdir=$cbsd_workdir
+
+[ ! -d ${workdir}/jails-system/${myjname} ] && mkdir -p ${workdir}/jails-system/${myjname}
+[ -f ${mydir}/tmpfsdir ] && cp ${mydir}/tmpfsdir ${workdir}/jails-system/${myjname}
+
+cbsd pkg mode=bootstrap repodir=/usr/local/etc/pkg/repos jname=${myjname}
+cbsd pkg mode=install repodir=/usr/local/etc/pkg/repos jname=${myjname} pkglist=/root/boot.bsdstore.ru/helpers/img/${myjname}/img.list
+
+[ -d "${mydir}/${myjname}" -a -d "${workdir}/jails-system/${myjname}" ] && cp -Rp ${mydir}/${myjname}/* ${workdir}/jails-system/${myjname}/
+[ -d "${workdir}/jails-data/${myjname}-data/var/cache/pkg/All" ] && rm -rf "${workdir}/jails-data/${myjname}-data/var/cache/pkg/All"
+
+# remove temp fstab local from .scene file for pkg repos
+[ -f "${workdir}/jails-fstab/fstab.${myjname}.local" ] && rm -f ${workdir}/jails-fstab/fstab.${myjname}.local

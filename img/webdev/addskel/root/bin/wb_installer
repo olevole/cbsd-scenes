@@ -1,0 +1,119 @@
+#!/bin/sh
+
+#defines
+_MYDIR=$(dirname `realpath $0`)
+
+usage()
+{
+cat > /dev/stdout <<EOF
+$0 <options> <mode>
+
+possible options:
+ -i <interface> - specify interface for dhclient
+
+
+possible mode:
+ firststart - mark executin as firststart from bootable distributive media
+
+
+EOF
+exit
+}
+
+trap "INSTALLLOOP=0 ; clear; echo; echo \"Exit to shell. To return into bootstrap script, please type: /root/bin/webdev_install\";  echo" HUP INT ABRT BUS TERM  EXIT
+
+### MAIN Route ###
+set -e
+    ECHO="echo"
+    NO_COLOR="0"
+    . ${_MYDIR}/ansiicolor.subr
+    . ${_MYDIR}/wb_installer.subr
+    . ${_MYDIR}/wb_net_helper.subr
+set +e
+
+[ -z "${1}" ] && usage
+
+while getopts "i:c" opt; do
+    case "${opt}" in
+        i)
+            IFACE="${OPTARG}" ;;
+        c)
+            NO_COLOR="1" ;;
+        *)  usage ;;
+    esac
+    shift $(($OPTIND - 1))
+done
+
+mode="${1}"
+[ -z "${mode}" ] && echo "Please specify mode" && usage
+
+[ ${NO_COLOR} -eq 0 ] && init_color
+
+case "${mode}" in
+    "dhclient")
+        [ -z "${IFACE}" ] && echo "-i in necessary" && usage
+        MYNIC="${IFACE}"
+        dhcp_client "${MYNIC}"
+        collect_net_data
+        save_settings
+        exit
+        ;;
+    *)
+        usage
+        ;;
+esac
+
+### OLD ###
+exit
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# MAIN
+firststart="${1}"
+[ "${firststart}" = "firststart" ] && kldload zfs
+init_color
+nic_test
+disk_test
+
+while [ ${INSTALLLOOP} -eq 1 ]; do
+    save_settings
+    service nginx reload >/dev/null 2>&1
+    clear
+    ${ECHO} "   ${BOLD}==== Welcome to ${PRODUCT} bootstrap script ====${NORMAL} "
+
+    show_menu
+    read p
+
+    case ${p} in
+	1)
+	    network
+	    ;;
+	2)
+	    storage
+	    ;;
+	i)
+	    [ -z "${MYDSK}" ] && continue
+	    install
+	    post_install
+	    ;;
+	0)
+	    echo "Reboot"
+	    INSTALLLOOP=0
+	    exit
+	    ;;
+	*)
+	    echo "Unknown"
+	    ;;
+    esac
+done

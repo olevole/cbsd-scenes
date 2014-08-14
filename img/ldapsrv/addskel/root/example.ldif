@@ -1,0 +1,35 @@
+#First we'll define our top level domain
+
+dn: %%LDAPSUFFIX%%
+#dc: example
+description: Example, which is the main domain for the LDAP DC
+objectClass: dcObject
+objectClass: organization
+o: Example Domain
+
+## FIRST Level hierarchy - People
+
+dn: ou=People, %%LDAPSUFFIX%%
+ou: People
+description: The People Organizational Unit
+objectclass: organizationalunit
+
+## SECOND Level hierarchy - Staff/People
+dn: ou=Staff,ou=People,%%LDAPSUFFIX%%
+ou: Staff
+description: The Staff/People Organizational Unit
+objectClass: organizationalUnit
+
+## FIRST Level hierarchy - Computers
+
+dn: ou=Computers, %%LDAPSUFFIX%%
+ou: Computers
+description: All customers within the LDAP
+objectclass: organizationalunit
+
+## FIRST Level hierarchy - Roles
+
+dn: ou=Roles, %%LDAPSUFFIX%%
+ou: Roles
+description: Non-User User Account OU
+objectclass: organizationalunit

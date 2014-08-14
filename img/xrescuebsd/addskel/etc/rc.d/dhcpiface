@@ -1,0 +1,18 @@
+#!/bin/sh
+#
+# PROVIDE: dhcpiface
+# KEYWORD: nojail
+
+ALL=0
+
+for i in $(/sbin/ifconfig -l); do
+
+    if [ ${ALL} -eq 0 ]; then
+	case "${i%%[0-9]*}" in
+	    ipfw|ppp|sl|lp|faith|fwe|fwip|plip|pfsync|pflog|tun|vboxnet|lo)
+		continue
+		;;
+	esac
+    fi
+	/usr/sbin/daemon /sbin/dhclient -c /etc/dhclient_rescue.conf ${i}
+done

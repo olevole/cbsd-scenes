@@ -1,0 +1,12 @@
+#!/bin/sh
+
+err() {
+    exitval=$1
+    shift
+    echo -e "$*"
+    # 1>&2
+    exit $exitval
+}
+
+chown www:www /usr/local/www/wordpress
+chmod 0755 /usr/local/www/wordpress
