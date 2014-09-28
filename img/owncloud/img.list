@@ -3,6 +3,7 @@ apache24
 lang/php55
 php55-opcache
 php55-ftp
+mod_php55
 pecl-imagick
 samba36-smbclient
 ffmpeg

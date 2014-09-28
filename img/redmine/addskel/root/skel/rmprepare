@@ -1,11 +1,11 @@
 #!/bin/sh
 
 if [ -n "${1}" ]; then
-    MYHOST="$1"
-    REDMINE_LANG="$2"
+	MYHOST="$1"
+	REDMINE_LANG="$2"
 else
-    MYHOST=`hostname`
-    REDMINE_LANG="$1"
+	MYHOST=$( hostname )
+	REDMINE_LANG="$1"
 fi
 
 RMDIR="/usr/local/www/redmine"

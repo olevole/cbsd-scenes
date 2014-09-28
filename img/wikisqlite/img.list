@@ -2,9 +2,7 @@ mediawiki122
 nginx-devel
 php55-opcache
 xcache
-ocaml-nox11
-latex2e
-ImageMagick
+ImageMagick-nox11
 ghostscript9-nox11
 mediawiki122
 php55-pdo_sqlite

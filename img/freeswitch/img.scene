@@ -1,6 +1,0 @@
-jname="%%JNAME%%"
-ver="native"
-arch="native"
-customskel="%%MYDIR%%/addskel"
-fstablocal="%%MYDIR%%/fstab.local"
-stable="0"

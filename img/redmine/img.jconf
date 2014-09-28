@@ -42,5 +42,4 @@ exec_master_prestart="0";
 exec_master_prestop="0";
 interface="auto";
 
-pkglist="%%MYDIR%%/img.list";
-packagesite="pkg+http://dl.bsdstore.ru/freebsd/${arch}/${ver}/nox";
+pkglist="/root/boot.bsdstore.ru/helpers/img/%%JNAME%%/img.list";

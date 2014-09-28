@@ -1,0 +1,6 @@
+#!/bin/sh
+
+[ ! -d "/usr/local/www" ] && mkdir -p /usr/local/www
+cd /usr/local/www
+mkdir data
+chmod a+w data

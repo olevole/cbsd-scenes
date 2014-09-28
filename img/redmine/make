@@ -17,22 +17,20 @@ trap "${TRAP}" HUP INT ABRT BUS TERM EXIT
 sed -Ees:%%JNAME%%:${jname}:g \
 -es:%%VER%%:${ver}:g \
 -es:%%ARCH%%:${arch}:g \
--es:%%MYDIR%%:${mydir}:g \
 ${mydir}/img.scene > /tmp/img.scene.$$
 
 sed -Ees:%%JNAME%%:${jname}:g \
 -es:%%VER%%:${ver}:g \
 -es:%%ARCH%%:${arch}:g \
--es:%%MYDIR%%:${mydir}:g \
 ${mydir}/img.jconf > /tmp/img.$$.jconf
 
 if [ -f "${mydir}/fstab.local.tpl" ]; then
-    sed -Ees:%%JNAME%%:${jname}:g \
-    -es:%%VER%%:${ver}:g \
-    -es:%%ARCH%%:${arch}:g \
-    ${mydir}/fstab.local.tpl > ${mydir}/fstab.local
-    TRAP="${TRAP} rm -f ${mydir}/fstab.local;"
-    trap "${TRAP}" HUP INT ABRT BUS TERM EXIT
+	sed -Ees:%%JNAME%%:${jname}:g \
+	-es:%%VER%%:${ver}:g \
+	-es:%%ARCH%%:${arch}:g \
+	${mydir}/fstab.local.tpl > ${mydir}/fstab.local
+	TRAP="${TRAP} rm -f ${mydir}/fstab.local;"
+	trap "${TRAP}" HUP INT ABRT BUS TERM EXIT
 fi
 
 cbsd makescene scene=/tmp/img.scene.$$

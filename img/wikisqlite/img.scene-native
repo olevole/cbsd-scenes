@@ -1,6 +1,0 @@
-jname="wikisqlite"
-ver="native"
-arch="native"
-repoversion="nox"
-customskel="/root/boot.bsdstore.ru/helpers/img/wikisqlite/addskel"
-fstablocal="/root/boot.bsdstore.ru/helpers/img/wikisqlite/fstab.local"
