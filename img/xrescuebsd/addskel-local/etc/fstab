@@ -1,0 +1,2 @@
+# Device	Mountpoint	FStype	Options	Dump	Pass#
+tmpfs	/tmp tmpfs rw 0 0

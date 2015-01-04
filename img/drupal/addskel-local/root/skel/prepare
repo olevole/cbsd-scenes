@@ -1,0 +1,6 @@
+#!/bin/sh
+
+chown www:www /usr/local/www/drupal7/sites/default/files
+chmod 0755 /usr/local/www/drupal7/sites/default/files
+cp /usr/local/www/drupal7/sites/default/default.settings.php /usr/local/www/drupal7/sites/default/settings.php
+chown www:www /usr/local/www/drupal7/sites/default/settings.php

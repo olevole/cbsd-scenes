@@ -1,0 +1,10 @@
+#!/bin/sh
+export LANG=ru_RU.UTF-8
+
+. /root/etc/mypw
+
+if [ -n "${MYPW}" ]; then
+	/usr/local/bin/mysql -uroot -p${MYPW}
+else
+	/usr/local/bin/mysql -uroot
+fi

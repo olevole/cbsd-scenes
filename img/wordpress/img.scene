@@ -1,6 +1,13 @@
+localrepo="0"
 jname="%%JNAME%%"
 ver="native"
 arch="native"
-customskel="/root/boot.bsdstore.ru/helpers/img/%%JNAME%%/addskel"
-fstablocal="/root/boot.bsdstore.ru/helpers/img/%%JNAME%%/fstab.local"
+
 #stable="1"
+
+if [ "${localrepo}" = "1" ]; then
+	customskel="/root/boot.bsdstore.ru/helpers/img/%%JNAME%%/addskel-local"
+	fstablocal="/root/boot.bsdstore.ru/helpers/img/%%JNAME%%/fstab.local"
+else
+	customskel="/root/boot.bsdstore.ru/helpers/img/%%JNAME%%/addskel"
+fi

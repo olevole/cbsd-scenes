@@ -1,5 +1,5 @@
-apache24
-php55-opcache
-mod_php55
-mysql55-server
-drupal7
+www/apache24
+www/mod_php5
+www/pecl-zendopcache
+databases/mysql55-server
+www/drupal7

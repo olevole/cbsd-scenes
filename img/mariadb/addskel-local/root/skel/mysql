@@ -1,0 +1,48 @@
+#!/bin/sh
+# $1 - rootpw, $2 - hosts, $3 - network(1 - tcpip, 0 - unix sock only)
+# /root/skel/mysql ${rootpw} ${hosts} ${network}
+if [ -z "$1" ]; then
+	MYPW=""
+else
+	MYPW="$1"
+fi
+
+if [ -z "$2" ]; then
+	HOSTS="'localhost'"
+else
+	HOSTS="'$2'"
+fi
+
+if [ "$3" = "1" ]; then
+	NETWORK="#skip-networking"
+else
+	NETWORK="skip-networking"
+fi
+
+sed -i '' s:%%NETWORK%%:${NETWORK}:g /root/etc/my.cnf
+
+/usr/sbin/service mysql-server status || /usr/sbin/service mysql-server restart > /dev/null 2>&1
+[ ! -h "/var/db/mysql/my.cnf" ] && ln -sf /root/etc/my.cnf /var/db/mysql/my.cnf
+
+cat > /root/etc/mypw <<EOF
+MYPW="${MYPW}"
+EOF
+
+chmod 0400 /root/etc/mypw
+
+if [ -n "${MYPW}" ]; then
+	SQLCRED="-p${MYPW}"
+else
+	SQLCRED=""
+fi
+
+#echo /usr/local/bin/mysql -uroot -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@${HOSTS} IDENTIFIED BY \"${MYPW}\";"
+/usr/local/bin/mysql -uroot -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@${HOSTS} IDENTIFIED BY \"${MYPW}\"; USE mysql; DELETE FROM user WHERE Password=''"
+
+#if [ -n "${SQLCRED}" ]; then
+#    /usr/local/bin/mysql -uroot ${SQLCRED} mysql -e "DELETE FROM user WHERE PASSWORD='';"
+#else
+#    /usr/local/bin/mysql -uroot mysql -e "DELETE FROM user WHERE PASSWORD='';"
+#fi
+
+/usr/sbin/service mysql-server stop

@@ -1,0 +1,1 @@
+*/15 * * * * /usr/bin/lockf -s -t0 /tmp/owncloudcron.lock /usr/local/bin/php -f /usr/local/www/owncloud/cron.php > /dev/null 2>&1

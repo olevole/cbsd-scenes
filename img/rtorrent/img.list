@@ -1,6 +1,5 @@
-nginx-devel
-php55
-php55-json
-rtorrent
-tmux
-
+www/nginx-devel
+lang/php5
+devel/php5-json
+net-p2p/rtorrent
+sysutils/tmux

@@ -1,11 +1,11 @@
-mariadb55-server
+mysql55-server
 subversion
 git
 rubygem-mysql2
 rubygem-activerecord-mysql-adapter
 rubygem-mysql
 apache24
-ruby19-gems
+ruby20-gems
 rubygem-rake
 rubygem-bundler
 redmine

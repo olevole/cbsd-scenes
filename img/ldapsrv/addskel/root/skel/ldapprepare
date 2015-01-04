@@ -1,0 +1,37 @@
+#!/bin/sh
+
+err() {
+	exitval=$1
+	shift
+	echo -e "$*"
+	# 1>&2
+	exit $exitval
+}
+
+ldapsuffix="$1"
+ldapcn="$2"
+clean_mgmtpassword="$3"
+
+[ -z "${ldapsuffix}" ] && err 1 "Empty ldapsuffix"
+[ -z "${ldapcn}" ] && err 1 "Empty ldapcn"
+[ -z "${clean_mgmtpassword}" ] && err 1 "Empty clean_mgmtpassword"
+
+LDAPDIR="/usr/local/etc/openldap"
+
+mgmtpassword=$( slappasswd -h '{SSHA}' -s ${clean_mgmtpassword} )
+
+cp /root/skel/ldap.conf ${LDAPDIR}/ldap.conf
+cp /root/skel/slapd.conf ${LDAPDIR}/slapd.conf
+# for nss
+cp /root/skel/nss_ldap.conf /usr/local/etc/nss_ldap.conf
+cp /root/skel/ldap-nss.conf /usr/local/etc/ldap.conf
+
+sed -i '' s:%%LDAPSUFFIX%%:${ldapsuffix}:g ${LDAPDIR}/ldap.conf /root/example.ldif /root/example_user.ldif ${LDAPDIR}/slapd.conf /usr/local/etc/nss_ldap.conf /usr/local/etc/ldap.conf
+sed -i '' s:%%LDAPCN%%:${ldapcn}:g ${LDAPDIR}/ldap.conf /root/example.ldif /root/example_user.ldif ${LDAPDIR}/slapd.conf /usr/local/etc/nss_ldap.conf
+sed -i '' s:%%MGMTPASSWORD%%:${mgmtpassword}:g ${LDAPDIR}/ldap.conf /root/example.ldif /root/example_user.ldif ${LDAPDIR}/slapd.conf
+
+service slapd start
+#set -o xtrace
+ldapadd -Z -D "cn=${ldapcn},${ldapsuffix}" -w ${clean_mgmtpassword} -f /root/example.ldif
+#set +o xtrace
+service slapd stop

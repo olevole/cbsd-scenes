@@ -1,6 +1,5 @@
-nginx-devel
-php55
-php55-opcache
-mysql55-server
-wordpress
-mc
+www/nginx-devel
+lang/php5
+www/pecl-zendopcache
+databases/mysql55-server
+www/wordpress

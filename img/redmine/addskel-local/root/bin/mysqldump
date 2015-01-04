@@ -1,0 +1,17 @@
+#!/bin/sh
+#
+export LANG=ru_RU.UTF-8
+
+. /root/etc/mypw
+
+SQLBASE=$( echo show databases | mysql -uroot -p${MYPW} | sed /Database/d )
+BCKPDIR="/usr/home/backup/"
+MYSQLDUMP="/usr/local/bin/mysqldump"
+
+[ -d ${BCKPDIR} ] || mkdir -p ${BCKPDIR}
+
+for BASE in ${SQLBASE}; do
+	SQLFILE="${BCKPDIR}/${BASE}.gz"
+	${MYSQLDUMP} -uroot -p${MYPW} --lock-all-tables --databases ${BASE} |gzip > ${SQLFILE}
+	chmod 0400 ${SQLFILE}
+done

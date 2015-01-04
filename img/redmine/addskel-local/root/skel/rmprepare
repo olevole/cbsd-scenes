@@ -1,0 +1,29 @@
+#!/bin/sh
+
+if [ -n "${1}" ]; then
+	MYHOST="$1"
+	REDMINE_LANG="$2"
+else
+	MYHOST=$( hostname )
+	REDMINE_LANG="$1"
+fi
+
+RMDIR="/usr/local/www/redmine"
+
+cp /root/skel/configuration.yml ${RMDIR}/config
+
+. /root/etc/mypw
+
+sed s:RMPW:${RMPW}:g /root/skel/database.yml > ${RMDIR}/config/database.yml
+
+sed s:MY.HOSTNAME:${MYHOST}:g /root/skel/httpd-vhosts.conf > /usr/local/etc/apache24/Includes/httpd-redmine.conf
+
+chown -R www:www ${RMDIR}
+su -m www -c "cd ${RMDIR}; \
+rake generate_secret_token; \
+env RAILS_ENV=production rake db:migrate; \
+env RAILS_ENV=production REDMINE_LANG=${REDMINE_LANG} rake redmine:load_default_data"
+
+chmod -R 0755 ${RMDIR}/files ${RMDIR}/log ${RMDIR}/tmp
+mkdir /var/log/httpd
+service mysql-server stop > /dev/null 2>&1

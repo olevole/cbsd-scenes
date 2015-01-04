@@ -1,0 +1,38 @@
+#!/bin/sh
+# $1 - root pw, $2 - redmine pw
+/usr/sbin/service mysql-server status || /usr/sbin/service mysql-server restart > /dev/null 2>&1
+
+[ ! -h "/var/db/mysql/my.cnf" ] && ln -s /root/etc/my.cnf /var/db/mysql/my.cnf
+
+if [ -z "$1" ]; then
+	MYPW=""
+else
+	MYPW="$1"
+fi
+
+if [ -z "$2" ]; then
+	DRUPALPW="my_password"
+else
+	DRUPALPW="$2"
+fi
+
+cat > /root/etc/mypw <<EOF
+MYPW="${MYPW}"
+DRUPALPW="${DRUPALPW}"
+EOF
+
+chmod 0400 /root/etc/mypw
+
+if [ -n "${MYPW}" ]; then
+	SQLCRED="-p${MYPW}"
+else
+	SQLCRED=""
+fi
+
+/usr/local/bin/mysql -uroot -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@localhost IDENTIFIED BY \"${MYPW}\";"
+[ -n "${SQLCRED}" ] && /usr/local/bin/mysql -uroot ${SQLCRED} mysql -e "DELETE FROM user WHERE PASSWORD='';"
+/usr/local/bin/mysql -uroot ${SQLCRED} -e "CREATE DATABASE drupal CHARACTER SET utf8;"
+/usr/local/bin/mysql -uroot ${SQLCRED} -e "GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER on drupal.* TO 'drupal'@'localhost' IDENTIFIED BY \"${DRUPALPW}\";"
+/usr/sbin/service mysql-server stop
+
+#sed s:%%DRUPALPW%%:${DRUPALPW}:g /root/skel/settings.php > /usr/local/www/drupal7/sites/default/settings.php

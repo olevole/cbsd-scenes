@@ -1,0 +1,9 @@
+openldap-server
+www/nginx-devel
+lang/php5
+www/pecl-zendopcache
+net/phpldapadmin
+sysutils/ldapvi
+security/pam_mkhomedir
+security/pam_ldap
+net/nss_ldap

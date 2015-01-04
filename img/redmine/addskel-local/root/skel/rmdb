@@ -1,0 +1,35 @@
+#!/bin/sh
+# $1 - root pw, $2 - redmine pw
+/usr/sbin/service mysql-server status || /usr/sbin/service mysql-server restart > /dev/null 2>&1
+
+[ ! -h "/var/db/mysql/my.cnf" ] && ln -s /root/etc/my.cnf /var/db/mysql/my.cnf
+
+if [ -z "$1" ]; then
+	MYPW=""
+else
+	MYPW="$1"
+fi
+
+if [ -z "$2" ]; then
+	RMPW="my_password"
+else
+	RMPW="$2"
+fi
+
+cat > /root/etc/mypw <<EOF
+MYPW="${MYPW}"
+RMPW="${RMPW}"
+EOF
+
+chmod 0400 /root/etc/mypw
+
+if [ -n "${MYPW}" ]; then
+	SQLCRED="-p${MYPW}"
+else
+	SQLCRED=""
+fi
+
+/usr/local/bin/mysql -uroot -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@localhost IDENTIFIED BY \"${MYPW}\";"
+[ -n "${SQLCRED}" ] && /usr/local/bin/mysql -uroot ${SQLCRED} mysql -e "DELETE FROM user WHERE PASSWORD='';"
+/usr/local/bin/mysql -uroot ${SQLCRED} -e "CREATE DATABASE redmine CHARACTER SET utf8;"
+/usr/local/bin/mysql -uroot ${SQLCRED} -e "GRANT ALL PRIVILEGES ON redmine.* TO 'redmine'@'localhost' IDENTIFIED BY \"${RMPW}\";"
